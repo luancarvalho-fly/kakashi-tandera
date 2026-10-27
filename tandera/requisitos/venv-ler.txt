@@ -1,0 +1,11 @@
+# venv-ler do Tandera (texto na tela: PP-OCRv6 dentro do RapidOCR 1.2.3, só no processador), Python 3.12.
+# Tem que ser o RapidOCR 1.2.3: o scripts\tandera_ocr.py remenda 3 linhas dele pra aceitar o dicionário do v6.
+rapidocr-onnxruntime==1.2.3
+onnxruntime==1.31.0
+numpy==2.5.2
+opencv-python==5.0.0.93
+pillow==10.4.0
+pyclipper==1.4.0
+shapely==2.2.0
+six==1.17.0
+pyyaml==6.0.3

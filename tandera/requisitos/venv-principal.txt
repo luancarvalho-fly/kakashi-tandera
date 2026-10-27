@@ -1,0 +1,44 @@
+# .venv principal do Tandera (Python 3.12): as MESMAS versões do kit do notebook (26/10/2026), conferidas no PC sem conflito.
+# O instalar.py instala assim (sem placa NVIDIA, ele troca +cu128 por +cpu e usa o índice .../whl/cpu):
+#   uv pip install --python .venv\Scripts\python.exe -r venv-principal.txt --extra-index-url https://download.pytorch.org/whl/cu128 --index-strategy unsafe-best-match
+# e, se o PC roda a batida, o Beat This! (código num commit fixo do GitHub, sem dependências).
+
+# base
+torch==2.11.0+cu128
+torchaudio==2.11.0+cu128
+torchvision==0.26.0+cu128
+numpy==2.5.2
+scipy==1.18.1
+psutil==7.2.2
+pillow==12.3.0
+opencv-python==5.0.0.93
+tqdm==4.70.1
+pyyaml==6.0.3
+huggingface-hub==2.2.0
+
+# som: carregar, medir, entonação
+librosa==1.0.0
+soundfile==0.14.0
+soxr==1.1.0
+praat-parselmouth==0.4.7
+
+# corte: AutoShot (onnx, processador) + TransNetV2
+onnxruntime==1.31.0
+transnetv2-pytorch==1.0.5
+
+# fala: faster-whisper + MMS do torchaudio
+faster-whisper==1.2.1
+ctranslate2==4.8.3
+
+# batida: dependências do Beat This!
+einops==0.8.2
+rotary-embedding-torch==0.9.1
+
+# BandIt Plus (msst, roda neste mesmo .venv)
+ml-collections==1.1.0
+omegaconf==2.3.1
+pytorch-lightning==2.6.6
+torchmetrics==1.9.0
+matplotlib==3.11.2
+pandas==3.0.6
+scikit-learn==1.9.1

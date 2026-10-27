@@ -1,0 +1,22 @@
+{
+ "_leia": "Molde. O instalar.py preenche a partir do PC check (perfil.json): 'variaveis' é refeito a cada instalação; o que você quiser fixar vai em 'minhas' (vence 'variaveis'). {pasta} = a pasta do Tandera. O tandera.py lê este arquivo antes de tudo.",
+ "_variaveis_que_existem": {
+  "TANDERA_PULAR": "etapas que ficam de fora neste PC, separadas por vírgula (ex.: camera,corpo,rosto,efeitos)",
+  "TANDERA_OLHO": "o modelo do olho local no Ollama (o padrão do Tandera é gemma4:12b, 8 GB de placa)",
+  "REGUA_WHISPER": "a pasta do faster-whisper (ou o nome: large-v3, medium, small)",
+  "REGUA_WHISPER_TIPO": "int8_float16 na placa pequena (4 GB); float16 é o padrão na placa",
+  "REGUA_PLACA_FRACAO": "0.85 na placa pequena: o torch para com erro em vez de transbordar pra RAM",
+  "REGUA_IDIOMA": "força o idioma da fala (pt, en...); vazio = descobre sozinho",
+  "TORCH_HOME": "onde ficam o MMS e o Beat This (dentro da pasta do Tandera)",
+  "AUDIO_SEPARATOR_MODEL_DIR": "onde fica o Roformer da separação (dentro da pasta do Tandera)",
+  "REGUA_PY_LER": "outro Python pro texto na tela (padrão: venv-ler da pasta)",
+  "REGUA_PY_CINE": "outro Python pro BandIt (padrão: .venv da pasta)",
+  "REGUA_WHISPER_URL": "um whisper-server local (padrão 127.0.0.1:8178; sem ele, o faster-whisper transcreve)"
+ },
+ "nivel": "",
+ "torch": "",
+ "sem_placa": true,
+ "etapas_no_pc": [],
+ "variaveis": {},
+ "minhas": {}
+}

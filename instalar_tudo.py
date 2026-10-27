@@ -9,7 +9,7 @@ Ele (27/10): «coloca da maneira mais fácil pra pessoa só instalar no PC dela,
   --atualizar (o atualizar.py usa): sem pergunta, mantém atalho/config/gravações; Tandera só se já estiver instalado.
   --teste: instala em pastas de teste (%TEMP%), sem ligar nada, sem skill e sem Premiere.
 """
-import argparse, os, shutil, subprocess, sys
+import argparse, json, os, shutil, subprocess, sys
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 LOCAL = os.environ.get("LOCALAPPDATA", "")
@@ -72,8 +72,20 @@ def main():
     tandera = os.path.join(AQUI, "tandera", "instalar.py")
     if os.path.isfile(tandera) and not a.sem_tandera:
         titulo("3. TANDERA (análise de vídeo)")
-        if a.atualizar and not os.path.isdir(dest_t):
-            print("O Tandera não está instalado neste PC: pulei (pra instalar, rode o Instalar.bat da versão nova).")
+        cfg_k = os.path.join(dest_k, "config.json")
+        try:
+            c = json.load(open(cfg_k, encoding="utf-8"))
+        except (OSError, ValueError):
+            c = {}
+        if a.atualizar and not os.path.isdir(dest_t) and (c.get("tandera") is False or a.teste):
+            print("O Tandera não está instalado neste PC (você pulou antes): pra instalar, rode o Instalar.bat de novo.")
+        elif a.atualizar and not os.path.isdir(dest_t):
+            # o Tandera chegou numa versão nova e esta pessoa só tinha o Kakashi: pergunta UMA vez e guarda a resposta
+            rodar(tandera, "--destino", dest_t, "--so-tamanho")
+            quer = not input("\nO Tandera (análise de vídeo) chegou nesta versão. Instalar agora? Enter = sim · N = não: ").strip().lower().startswith("n")
+            c["tandera"] = quer; json.dump(c, open(cfg_k, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+            if quer and rodar(tandera, "--destino", dest_t, "--sem-perguntas") != 0:
+                print("O Tandera não instalou (veja a mensagem acima). O Kakashi já está atualizado e funcionando.")
         else:
             t = [tandera, "--destino", dest_t, "--sem-perguntas"] + (["--sem-skill"] if a.teste else [])
             if not (a.atualizar or a.sim):
@@ -81,6 +93,10 @@ def main():
                 if input("\nInstalar o Tandera agora? Enter = sim · N = pular: ").strip().lower().startswith("n"):
                     print("Tandera pulado. Dá pra instalar depois rodando o Instalar.bat de novo.")
                     t = None
+                    try:              # guarda: a atualização não pergunta de novo
+                        c["tandera"] = False; json.dump(c, open(cfg_k, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+                    except OSError:
+                        pass
             if t and rodar(*t) != 0:
                 print("O Tandera não instalou (veja a mensagem acima). O Kakashi já está instalado e funcionando.")
 
