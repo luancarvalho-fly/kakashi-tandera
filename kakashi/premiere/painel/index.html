@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<style>
+  /* KAKASHI 8 bits (14/10 ~21h40, Luan: "deixa ele na estética 8 bits"). Regras do UXP (pagas): nada de gap,
+     text-transform, box-shadow, transition, position absolute, background-color (so o shorthand background), px
+     quebrado, <button> (nao pinta: botao e <div role=button>), seletor descendente no JS.
+     Pixel: canto reto (sem border-radius), borda grossa com relevo (claro em cima/esquerda, escuro embaixo/direita),
+     fonte mono em CAIXA ALTA escrita no proprio texto. */
+  html, body { height: 100%; margin: 0; padding: 0; }
+  body { background: #0b0b0e; color: #f2f2f2; overflow-y: auto; overflow-x: hidden;
+         font-family: Consolas, "Cascadia Mono", "Courier New", monospace; font-size: 13px; line-height: 18px; }
+  .app { padding: 12px 12px 18px; }
+  .topo { display: flex; flex-direction: row; align-items: center; margin: 0 0 12px; }
+  .olho { flex: 0 0 auto; width: 80px; height: 80px; margin-right: 10px; }
+  .marca { flex: 1 1 auto; overflow: hidden; }
+  .titulo { display: block; width: 168px; height: 32px; }
+  .logo { display: none; }
+  .sublogo { font-size: 11px; color: #ff5c5c; height: 16px; line-height: 16px; margin-top: 4px; letter-spacing: 1px;
+             overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .cartao { padding: 6px 0 4px; margin-bottom: 8px; }
+  .crono { display: flex; flex-direction: row; justify-content: center; align-items: center; height: 44px; }
+  .dig { flex: 0 0 auto; height: 40px; }
+  .linha { display: flex; align-items: center; justify-content: center; margin-top: 6px; }
+  .ponto { flex: 0 0 auto; width: 8px; height: 8px; margin-right: 8px; background: #5b5b63; }
+  .ponto-on { background: #39d353; }
+  .ponto-rec { background: #ff1e2e; }
+  .ponto-pausa { background: #ffd60a; }
+  .ponto-off { background: #5b5b63; }
+  .status { font-size: 12px; color: #a6a6b0; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .acao { display: flex; flex-direction: row; align-items: center; justify-content: center; height: 44px; margin-top: 10px; cursor: pointer;
+          background: #d6001c; color: #ffffff; text-align: center; font-size: 16px; font-weight: 700; letter-spacing: 3px;
+          border-top: 4px solid #ff6a6a; border-left: 4px solid #ff6a6a; border-bottom: 4px solid #5e000c; border-right: 4px solid #5e000c; }
+  .acao:hover { background: #ec0a26; }
+  .acao:focus { border-top-color: #ffffff; border-left-color: #ffffff; }
+  .pausar { background: #2a2a33; color: #ffd60a; border-top: 4px solid #4a4a56; border-left: 4px solid #4a4a56;
+            border-bottom: 4px solid #0a0a0d; border-right: 4px solid #0a0a0d; }
+  .concluir { background: #15151a; color: #ff5c5c; border-top: 4px solid #34343e; border-left: 4px solid #34343e;
+              border-bottom: 4px solid #050507; border-right: 4px solid #050507; }
+  .desligado { background: #1a1a20; color: #4a4a54; cursor: default; border-top: 4px solid #24242b; border-left: 4px solid #24242b;
+               border-bottom: 4px solid #0a0a0d; border-right: 4px solid #0a0a0d; }
+  .rot { flex: 0 0 auto; height: 24px; }
+  .aviso { font-size: 11px; color: #6c6c76; text-align: center; margin-top: 10px; min-height: 16px; line-height: 16px; }
+  .aviso-erro { color: #ff1e2e; }
+  /* 0.3.0 (15/10) TRILHO = mini timeline dos pedacos (Luan: "como se fosse uma timeline mesmo, com os clipes. Uma linha
+     tracejada"). Cada pedaco gravado e um bloco do tamanho da duracao (flex-grow = decimos de segundo, posto no JS), um
+     do lado do outro; entre eles um corte tracejado feito de quadradinhos de div (nada de border dashed nem position).
+     Clique = seleciona (amarelo). O que esta gravando cresce na ponta (borda branca na direita = a agulha).
+     ALTURA (print do Premiere dele 15/10 12h45: o painel encaixado tem ~365 px de altura): o APAGAR fica do lado do
+     trilho e o CANCELAR do lado do CONCLUIR, pra o CONCLUIR continuar inteiro na tela sem rolar (350 px ate ele). */
+  .linhatrilho { display: flex; flex-direction: row; align-items: center; margin: 0 0 6px; }
+  .trilho { flex: 1 1 auto; display: flex; flex-direction: row; align-items: center; height: 26px; padding: 0 2px; overflow: hidden;
+            background: #121217; border-top: 2px solid #050507; border-left: 2px solid #050507; border-bottom: 2px solid #34343e; border-right: 2px solid #34343e; }
+  .ped { flex: 1 1 0px; min-width: 6px; height: 14px; cursor: pointer; background: #d6001c;
+         border-top: 2px solid #ff6a6a; border-left: 2px solid #ff6a6a; border-bottom: 2px solid #5e000c; border-right: 2px solid #5e000c; }
+  .ped-rec { background: #ff1e2e; border-top: 2px solid #ff8a8a; border-left: 2px solid #ff8a8a; border-bottom: 2px solid #5e000c; border-right: 2px solid #ffffff; cursor: default; }
+  .ped-sel { background: #ffd60a; border-top: 2px solid #fff4a0; border-left: 2px solid #fff4a0; border-bottom: 2px solid #7a6000; border-right: 2px solid #7a6000; }
+  .ped-apagado { background: #1c1c22; border-top: 2px solid #2e2e37; border-left: 2px solid #2e2e37; border-bottom: 2px solid #0a0a0d; border-right: 2px solid #0a0a0d; }
+  .ped-apagado-sel { background: #2a2a33; border-top: 2px solid #ffd60a; border-left: 2px solid #ffd60a; border-bottom: 2px solid #ffd60a; border-right: 2px solid #ffd60a; }
+  .corte { flex: 0 0 auto; display: flex; flex-direction: column; width: 2px; height: 18px; margin-left: 2px; margin-right: 2px; }
+  .traco { flex: 0 0 auto; width: 2px; height: 3px; margin-bottom: 2px; background: #c8c8d0; }
+  /* botoes pequenos (rotulo em letra miuda montada letra por letra: icones/px/c_*.png) */
+  .mini { flex: 0 0 auto; display: flex; flex-direction: row; align-items: center; justify-content: center; cursor: pointer;
+          background: #2a0006; border-top: 3px solid #6a0a16; border-left: 3px solid #6a0a16; border-bottom: 3px solid #0a0002; border-right: 3px solid #0a0002; }
+  .lado { width: 104px; height: 24px; margin-left: 6px; }
+  .canto { width: 104px; height: 46px; margin-left: 6px; }
+  .mini-voltar { background: #2a2a33; border-top: 3px solid #4a4a56; border-left: 3px solid #4a4a56; border-bottom: 3px solid #0a0a0d; border-right: 3px solid #0a0a0d; }
+  .mini-cancelar { background: #15151a; border-top: 3px solid #34343e; border-left: 3px solid #34343e; border-bottom: 3px solid #050507; border-right: 3px solid #050507; }
+  .mini-armado { background: #d6001c; border-top: 3px solid #ff6a6a; border-left: 3px solid #ff6a6a; border-bottom: 3px solid #5e000c; border-right: 3px solid #5e000c; }
+  .mini-off { cursor: default; background: #141418; border-top: 3px solid #1f1f26; border-left: 3px solid #1f1f26; border-bottom: 3px solid #08080a; border-right: 3px solid #08080a; }
+  .letra { flex: 0 0 auto; height: 16px; }
+  .linhafim { display: flex; flex-direction: row; align-items: center; margin-top: 10px; }
+  .fim { flex: 1 1 auto; margin-top: 0; }
+</style>
+</head>
+<body>
+  <div class="app">
+    <div class="topo">
+      <img class="olho" id="olhoImg" src="icones/olho.png" width="80" height="80" alt="KAKASHI">
+      <div class="marca">
+        <img class="titulo" src="icones/titulo.png" width="168" height="32" alt="KAKASHI">
+        <div class="logo" id="logo">KAKASHI</div>
+        <div class="sublogo" id="sublogo"></div>
+      </div>
+    </div>
+    <div class="cartao">
+      <div class="crono" id="crono"></div>
+      <div class="linha">
+        <div class="ponto ponto-off" id="ponto"></div>
+        <div class="status" id="status">procurando o servidor...</div>
+      </div>
+    </div>
+    <div class="linhatrilho">
+      <div class="trilho" id="trilho"></div>
+      <div class="mini lado mini-off" id="btPedaco" role="button" tabindex="0"></div>
+    </div>
+    <div class="acao desligado" id="btPrincipal" role="button" tabindex="0"></div>
+    <div class="linhafim">
+      <div class="acao concluir fim desligado" id="btConcluir" role="button" tabindex="0"></div>
+      <div class="mini canto mini-off" id="btCancelar" role="button" tabindex="0"></div>
+    </div>
+    <div class="aviso" id="aviso"></div>
+  </div>
+  <script src="main.js"></script>
+</body>
+</html>

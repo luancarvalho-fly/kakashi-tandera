@@ -1,0 +1,75 @@
+{
+    "id": "com.flymedia.kakashi",
+    "name": "KAKASHI",
+    "version": "0.3.0",
+    "main": "index.html",
+    "manifestVersion": 5,
+    "host": {
+        "app": "premierepro",
+        "minVersion": "25.6.0"
+    },
+    "requiredPermissions": {
+        "network": {
+            "domains": "all"
+        }
+    },
+    "icons": [
+        {
+            "width": 48,
+            "height": 48,
+            "path": "icones/icone_48.png",
+            "scale": [
+                1,
+                2
+            ],
+            "theme": [
+                "all"
+            ],
+            "species": [
+                "pluginList"
+            ]
+        }
+    ],
+    "entrypoints": [
+        {
+            "type": "panel",
+            "id": "corretor",
+            "label": {
+                "default": "KAKASHI"
+            },
+            "minimumSize": {
+                "width": 260,
+                "height": 300
+            },
+            "maximumSize": {
+                "width": 2200,
+                "height": 2200
+            },
+            "preferredDockedSize": {
+                "width": 320,
+                "height": 380
+            },
+            "preferredFloatingSize": {
+                "width": 320,
+                "height": 380
+            },
+            "icons": [
+                {
+                    "width": 23,
+                    "height": 23,
+                    "path": "icones/icone_23.png",
+                    "scale": [
+                        1,
+                        2
+                    ],
+                    "theme": [
+                        "all"
+                    ],
+                    "species": [
+                        "generic"
+                    ]
+                }
+            ]
+        }
+    ]
+}

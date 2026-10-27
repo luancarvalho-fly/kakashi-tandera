@@ -1,0 +1,5 @@
+pillow
+psutil
+pyaudiowpatch
+# só se for transcrever no próprio PC (config.json → "transcricao": "local"); o pc_check diz se o PC aguenta:
+# faster-whisper
