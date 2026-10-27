@@ -70,6 +70,7 @@ def main():
         sys.exit("O Kakashi não instalou (veja a mensagem acima). Nada do Tandera foi mexido.")
 
     tandera = os.path.join(AQUI, "tandera", "instalar.py")
+    falhou_t = False
     if os.path.isfile(tandera) and not a.sem_tandera:
         titulo("3. TANDERA (análise de vídeo)")
         cfg_k = os.path.join(dest_k, "config.json")
@@ -86,6 +87,7 @@ def main():
             c["tandera"] = quer; json.dump(c, open(cfg_k, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
             if quer and rodar(tandera, "--destino", dest_t, "--sem-perguntas") != 0:
                 print("O Tandera não instalou (veja a mensagem acima). O Kakashi já está atualizado e funcionando.")
+                falhou_t = True
         else:
             t = [tandera, "--destino", dest_t, "--sem-perguntas"] + (["--sem-skill"] if a.teste else [])
             if not (a.atualizar or a.sim):
@@ -99,6 +101,7 @@ def main():
                         pass
             if t and rodar(*t) != 0:
                 print("O Tandera não instalou (veja a mensagem acima). O Kakashi já está instalado e funcionando.")
+                falhou_t = True
 
     titulo("PRONTO")
     print("Kakashi: aperte o atalho, fale e mexa à vontade, aperte de novo e digite /kakashi no Claude Code.")
@@ -109,6 +112,8 @@ def main():
         pyw = os.path.join(dest_k, ".venv", "Scripts", "pythonw.exe")
         if os.path.isfile(pyw):          # mostra a janelinha (com o atalho escolhido e o botão de atualização)
             subprocess.Popen([pyw, os.path.join(dest_k, "kakashi.pyw"), "--painel"], cwd=dest_k)
+    if falhou_t:
+        sys.exit(2)                      # o Kakashi ficou; o Tandera não: quem chamou (atualizar.py, teste) fica sabendo
 
 
 if __name__ == "__main__":

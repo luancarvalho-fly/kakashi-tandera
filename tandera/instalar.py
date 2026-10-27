@@ -284,11 +284,15 @@ def variaveis(plano):
 
 
 def rodando(dest):
-    """processos Python que rodam DESTA pasta (um Tandera analisando agora)"""
+    """processos Python que rodam DESTA pasta (um Tandera analisando agora).
+    27/10 (sessão principal): o instalador NÃO conta. Rodando pelo .venv (a atualização usa o Python do Kakashi), o Windows abre 2
+    processos com a mesma linha de comando (o lançador do venv + o Python de verdade): excluir só o próprio pid achava o lançador e
+    dizia «O Tandera está rodando agora» sem análise nenhuma, e a atualização pulava o Tandera."""
     try:
         r = subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command",
-                            "Get-CimInstance Win32_Process -Filter \"Name='python.exe' or Name='pythonw.exe'\" | Where-Object { $_.CommandLine -like '*' + '%s' + '*' } | "
-                            "ForEach-Object { $_.ProcessId }" % dest.replace("'", "''")], capture_output=True, text=True, timeout=60, creationflags=SEM_JANELA)
+                            "Get-CimInstance Win32_Process -Filter \"Name='python.exe' or Name='pythonw.exe'\" | Where-Object { $_.CommandLine -like '*' + '%s' + '*' "
+                            "-and $_.CommandLine -notlike '*instalar.py*' } | ForEach-Object { $_.ProcessId }" % dest.replace("'", "''")],
+                           capture_output=True, text=True, timeout=60, creationflags=SEM_JANELA)
         return [x for x in r.stdout.split() if x.isdigit() and int(x) != os.getpid()]
     except Exception:
         return []
